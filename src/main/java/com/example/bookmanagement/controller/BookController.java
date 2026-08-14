@@ -1,5 +1,4 @@
 package com.example.bookmanagement.controller;
-
 import com.example.bookmanagement.entity.Book;
 import com.example.bookmanagement.service.BookService;
 import org.springframework.http.HttpStatus;
@@ -7,7 +6,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/books")
@@ -19,6 +17,7 @@ public class BookController {
         this.bookService = bookService;
     }
 
+    // POST - Create Book
     @PostMapping
     public ResponseEntity<Book> createBook(@RequestBody Book book) {
 
@@ -27,6 +26,7 @@ public class BookController {
         return new ResponseEntity<>(savedBook, HttpStatus.CREATED);
     }
 
+    // GET - Get All Books
     @GetMapping
     public ResponseEntity<List<Book>> getAllBooks() {
 
@@ -35,27 +35,21 @@ public class BookController {
         return ResponseEntity.ok(books);
     }
 
+    // GET - Get Book By ID
     @GetMapping("/{id}")
     public ResponseEntity<Book> getBookById(@PathVariable Long id) {
 
-        Optional<Book> book = bookService.getBookById(id);
+        Book book = bookService.getBookById(id);
 
-        if (book.isPresent()) {
-            return ResponseEntity.ok(book.get());
-        }
-
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(book);
     }
 
+    // DELETE - Delete Book By ID
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBook(@PathVariable Long id) {
+    public ResponseEntity<String> deleteBook(@PathVariable Long id) {
 
-        boolean deleted = bookService.deleteBook(id);
+        bookService.deleteBook(id);
 
-        if (deleted) {
-            return ResponseEntity.noContent().build();
-        }
-
-        return ResponseEntity.notFound().build();
+        return ResponseEntity.ok("Book deleted successfully");
     }
 }

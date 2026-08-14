@@ -1,11 +1,11 @@
 package com.example.bookmanagement.service;
 
 import com.example.bookmanagement.entity.Book;
+import com.example.bookmanagement.exception.BookNotFoundException;
 import com.example.bookmanagement.repository.BookRepository;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class BookService {
@@ -16,25 +16,34 @@ public class BookService {
         this.bookRepository = bookRepository;
     }
 
+    // POST - Create Book
     public Book createBook(Book book) {
         return bookRepository.save(book);
     }
 
+    // GET - Get All Books
     public List<Book> getAllBooks() {
         return bookRepository.findAll();
     }
 
-    public Optional<Book> getBookById(Long id) {
-        return bookRepository.findById(id);
+    // GET - Get Book By ID
+    public Book getBookById(Long id) {
+        return bookRepository.findById(id)
+                .orElseThrow(() ->
+                        new BookNotFoundException(
+                                "Book not found with id: " + id
+                        ));
     }
 
-    public boolean deleteBook(Long id) {
+    // DELETE - Delete Book By ID
+    public void deleteBook(Long id) {
 
         if (!bookRepository.existsById(id)) {
-            return false;
+            throw new BookNotFoundException(
+                    "Book not found with id: " + id
+            );
         }
 
         bookRepository.deleteById(id);
-        return true;
     }
 }
